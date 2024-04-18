@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="/static/css/output.css">
     <title>Document</title>
 </head>
-<body>
-    {{ template "content" . }} 
- </body>
+<body class="h-screen bg-gray-100">
+    <nav class="mb-8">
+        <div class="bg-gradient-to-tr from-green-400 to-blue-500 text-white text-center text-3xl py-6 shadow-md">
+            <h1>Status Page</h1>
+        </div>
+    </nav>
+    {{ template "content" . }}
+</body>
+
 </html>
 {{ end }}
