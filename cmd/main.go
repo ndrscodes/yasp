@@ -13,7 +13,7 @@ import (
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
-	tr, err := templates.NewTemplateRegistry("templates/*/*.html")
+	tr, err := templates.NewTemplateRegistry("templates")
 	if err != nil {
 		slog.Error("unable to set up template registry", "error", err)
 		panic(err)
@@ -26,7 +26,7 @@ func main() {
 
 func createMux(tr *templates.TemplateRegistry) *http.ServeMux {
 	mux := http.NewServeMux()
-	hoh := handlers.NewHomeHandler(tr, "index.html")
+	hoh := handlers.NewHomeHandler(tr, "home")
 	mux.HandleFunc("GET /", hoh.HandleGet)
 
 	fs := http.FileServer(http.Dir("static"))
