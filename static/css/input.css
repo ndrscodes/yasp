@@ -10,6 +10,14 @@
     .operational {
         @apply text-green-500
     }
+
+    .degraded {
+        @apply text-amber-500
+    }
+
+    .down {
+        @apply text-red-500
+    }
 }
 
 @layer components {
