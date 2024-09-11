@@ -1,17 +1,18 @@
 package templates
 
 import (
+	"embed"
 	"errors"
 	"html/template"
-	"io"
-	"os"
 	"time"
 )
+
+//go:embed layout pages
+var templates embed.FS
 
 type TemplateRegistry struct {
 	templates map[string]*template.Template
 	base      *template.Template
-	path      string
 	updated   time.Time
 }
 
@@ -28,22 +29,9 @@ func (tr *TemplateRegistry) Get(name string) (*template.Template, error) {
 	return t, nil
 }
 
-// reloads the contained template
-func (tr *TemplateRegistry) Reload(name string) (*template.Template, error) {
-	t := tr.templates[name]
-	if t == nil {
-		return nil, errors.New("template not found: " + name)
-	}
-
-	delete(tr.templates, name)
-	t, err := tr.Register(name)
-
-	return t, err
-}
-
 func (tr *TemplateRegistry) Register(page string) (*template.Template, error) {
 	if tr.base == nil {
-		return nil, errors.New("base template has not been registered.")
+		return nil, errors.New("base template has not been registered")
 	}
 
 	b, err := tr.base.Clone()
@@ -51,7 +39,7 @@ func (tr *TemplateRegistry) Register(page string) (*template.Template, error) {
 		return nil, err
 	}
 
-	t, err := b.ParseGlob(tr.path + "/pages/" + page + "/*")
+	t, err := b.ParseFS(templates, "pages/"+page+"/*")
 	if err != nil {
 		return nil, err
 	}
@@ -60,33 +48,15 @@ func (tr *TemplateRegistry) Register(page string) (*template.Template, error) {
 	return t, nil
 }
 
-func NewTemplateRegistry(path string) (t *TemplateRegistry, err error) {
-	b, err := template.ParseGlob(path + "/layout/*")
+func NewTemplateRegistry() (t *TemplateRegistry, err error) {
+	b, err := template.ParseFS(templates, "layout/*")
 	if err != nil {
 		return nil, err
-	}
-
-	com := path + "/common"
-	f, err := os.Open(com)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = f.Readdirnames(1)
-	if err != io.EOF {
-		return nil, err
-	}
-	if err == nil {
-		b, err = b.ParseGlob(com + "/*")
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	return &TemplateRegistry{
 		templates: make(map[string]*template.Template),
 		base:      b,
-		path:      path,
 		updated:   time.Now(),
 	}, nil
 }

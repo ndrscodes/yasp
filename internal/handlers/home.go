@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/ndrscodes/yasp/internal/util/templates"
+	"github.com/ndrscodes/yasp/internal/templates"
 )
 
 type HomeHandler struct {
