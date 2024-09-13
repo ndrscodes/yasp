@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/ndrscodes/yasp/internal/templates"
+	"github.com/ndrscodes/yasp/internal/web"
 )
 
 type HomeHandler struct {
@@ -18,7 +18,7 @@ func NewHomeHandler(root *template.Template) (HomeHandler, error) {
 		return HomeHandler{}, errors.New("root is nil")
 	}
 
-	t, err := root.ParseFS(templates.Files, "pages/home/*")
+	t, err := root.ParseFS(web.Files, "templates/pages/home/*")
 	if err != nil {
 		return HomeHandler{}, err
 	}
