@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"html/template"
 	"log/slog"
 	"net/http"
 
@@ -8,32 +10,26 @@ import (
 )
 
 type HomeHandler struct {
-	registry *templates.TemplateRegistry
-	page     string
+	template *template.Template
 }
 
-func NewHomeHandler(reg *templates.TemplateRegistry, p string) HomeHandler {
-	_, err := reg.Register(p)
+func NewHomeHandler(root *template.Template) (HomeHandler, error) {
+	if root == nil {
+		return HomeHandler{}, errors.New("root is nil")
+	}
+
+	t, err := root.ParseFS(templates.Files, "pages/home/*")
 	if err != nil {
-		slog.Error("unable to set up template registry", "error", err)
-		panic(err)
+		return HomeHandler{}, err
 	}
 
 	return HomeHandler{
-		registry: reg,
-		page:     p,
-	}
+		template: t,
+	}, err
 }
 
-func (h HomeHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
-	t, err := h.registry.Get(h.page)
-	if err != nil {
-		slog.Error("unable to obtain template", "error", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	err = t.ExecuteTemplate(w, "index.html", nil)
+func (h *HomeHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
+	err := h.template.ExecuteTemplate(w, "index.html", nil)
 	if err != nil {
 		slog.Error("template execution failed", "error", err)
 		w.WriteHeader(http.StatusInternalServerError)

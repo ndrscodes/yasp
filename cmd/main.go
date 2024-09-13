@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"log/slog"
 	"net/http"
@@ -14,20 +15,25 @@ import (
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
-	tr, err := templates.NewTemplateRegistry()
+	tpl, err := template.ParseFS(templates.Files, "layout/*")
 	if err != nil {
-		slog.Error("unable to set up template registry", "error", err)
-		panic(err)
+		log.Fatalf("Unable to parse templates: %v", err)
+		os.Exit(1)
 	}
 
-	mux := createMux(tr)
+	mux := createMux(tpl)
 
 	log.Fatalln(http.ListenAndServe(":8000", mux))
 }
 
-func createMux(tr *templates.TemplateRegistry) *http.ServeMux {
+func createMux(root *template.Template) *http.ServeMux {
 	mux := http.NewServeMux()
-	hoh := handlers.NewHomeHandler(tr, "home")
+	hoh, err := handlers.NewHomeHandler(root)
+	if err != nil {
+		log.Fatalf("Unable to create home handler: %v", err)
+		os.Exit(1)
+	}
+
 	mux.HandleFunc("GET /", hoh.HandleGet)
 
 	fs := http.FileServer(http.FS(static.Static))
