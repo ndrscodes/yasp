@@ -1,26 +1,22 @@
-{{ template "base" }}
+{{ template "base" . }}
 {{ define "content" }}
 <div class="px-4 md:px-0 md:flex justify-center items-center">
-    {{ template "systems" }}
+    {{ template "systems" . }}
 </div>
 {{ end }}
 
 {{ define "systems" }}
 <div class="md:w-2/3 rounded-lg border-2 border-gray-300 shadow-md">
+    {{ if not .Error }}
     <div class="bg-gray-800 text-white rounded-t-lg py-2 px-4">
         <h2 class="text-xl font-semibold">System Status</h2>
     </div>
+    {{ range $sys := .Systems }}
     <div class="system-container text-lg">
-        <div>Portal</div>
+        <div>{{ $sys.Name }}</div>
         <div class="operational text-lg">Operational</div>
     </div>
-    <div class="system-container text-lg">
-        <div>REST-API</div>
-        <div class="degraded text-lg">Degraded</div>
-    </div>
-    <div class="system-container text-lg">
-        <div>Some service</div>
-        <div class="down text-lg">Down</div>
-    </div>
+    {{ end }}
+    {{ end }}
 </div>
 {{ end }}

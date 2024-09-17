@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS systems (
+    id      SERIAL PRIMARY KEY,
+    name    VARCHAR(255) NOT NULL UNIQUE
+)
+    
