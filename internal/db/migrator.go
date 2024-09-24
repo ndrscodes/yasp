@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"log/slog"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -78,7 +79,11 @@ func (m *Migrator) Down() error {
 func (m *Migrator) Up() error {
 	v, d, err := m.migrate.Version()
 	if err != nil {
-		return err
+		if err.Error() == "no migration" {
+			slog.Info("no previous migration detected")
+		} else {
+			return err
+		}
 	}
 	m.migrate.Log.Printf("Applying database updates (current version: %d, dirty: %v)", v, d)
 

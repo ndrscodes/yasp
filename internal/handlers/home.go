@@ -24,7 +24,7 @@ func NewHomeHandler(repo *db.SystemRepository) (HomeHandler, error) {
 }
 
 func (h *HomeHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
-	systems, err := h.systemRepository.GetAll()
+	systems, err := h.systemRepository.GetAll(r.Context())
 
 	err = templates.Index(templates.SystemData{Systems: systems, Error: err}).Render(r.Context(), w)
 

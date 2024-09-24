@@ -1,1 +1,4 @@
 DROP TABLE IF EXISTS systems;
+DROP TABLE IF EXISTS system_incidents;
+DROP TABLE IF EXISTS incidents;
+DROP TABLE IF EXISTS updates;

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"log/slog"
@@ -41,7 +42,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	s, err := sys.GetAll()
+	s, err := sys.GetAll(context.Background())
 	if err != nil {
 		slog.Error("Unable to fetch systems", "error", err)
 		os.Exit(1)
